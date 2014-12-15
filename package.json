@@ -1,0 +1,26 @@
+{
+  "name": "style-stream",
+  "version": "1.0.0",
+  "description": "Transform stream that reads HTML and writes all (inline and referenced) CSS used in it.",
+  "main": "index.js",
+  "scripts": {
+    "test": "tape test/*.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/anandthakker/style-stream.git"
+  },
+  "keywords": [
+    "html",
+    "css",
+    "streaming",
+    "transform",
+    "styles"
+  ],
+  "author": "Anand Thakker <vestibule@anandthakker.net> (http://anandthakker.net)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/anandthakker/style-stream/issues"
+  },
+  "homepage": "https://github.com/anandthakker/style-stream"
+}
