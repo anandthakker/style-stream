@@ -22,5 +22,16 @@
   "bugs": {
     "url": "https://github.com/anandthakker/style-stream/issues"
   },
-  "homepage": "https://github.com/anandthakker/style-stream"
+  "homepage": "https://github.com/anandthakker/style-stream",
+  "devDependencies": {
+    "concat-stream": "^1.4.7",
+    "tape": "^3.0.3"
+  },
+  "dependencies": {
+    "duplexer2": "0.0.2",
+    "next-stream": "^2.0.0",
+    "request": "^2.51.0",
+    "through2": "^0.6.3",
+    "trumpet": "^1.7.0"
+  }
 }
