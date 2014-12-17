@@ -13,7 +13,8 @@ var reHttp = /^http/;
 
 function stylestream(opts) {
   var horn = trumpet(),
-    styles = next([]);
+    styles = next([]),
+    pending = 0;
 
   opts = opts || {
     baseurl: null,
@@ -22,7 +23,7 @@ function stylestream(opts) {
 
   horn.selectAll('link', function(elem) {
     elem.getAttribute('href', function(loc) {
-      styles.push(createStream(loc));
+      pushStreamForLocation(loc);
     });
   });
 
@@ -30,23 +31,33 @@ function stylestream(opts) {
     styles.push(elem.createReadStream());
   });
   
-  horn.on('end', function() {
-    styles.close();
-  });
+  horn.on('end', closeStyles);
 
   return duplexer(horn, styles);
 
 
-  function createStream(loc) {
+  function pushStreamForLocation(loc) {
     var isHttp = reHttp.test(loc);
     if (reHttp.test(opts.baseurl)) {
       isHttp = true;
       loc = url.resolve(opts.baseurl, loc);
     }
-    if (isHttp) return request(loc);
-    else if (opts.basepath) return fs.createReadStream(path.resolve(opts.basepath, loc));
+    if (isHttp) {
+      pending++;
+      var stream = request(loc).pipe(through());
+      stream.on('end', closeStyles);
+      styles.push(stream);
+    }
+    else if (opts.basepath) styles.push(fs.createReadStream(path.resolve(opts.basepath, loc)));
     else throw new Error('Cannot resolve href without a baseurl or basepath.')
   }
+  
+  function closeStyles() {
+    if(pending-- <= 0) {
+      styles.close();
+    }
+  }
+  
 }
 
 
