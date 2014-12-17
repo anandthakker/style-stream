@@ -20,6 +20,13 @@ function stylestream(opts) {
     baseurl: null,
     basepath: null
   }
+  
+  if(reHttp.test(opts.url)) {
+    return request(opts.url).pipe(stylestream({
+      baseurl: opts.url,
+      basepath: null
+    }));
+  }
 
   horn.selectAll('link', function(elem) {
     elem.getAttribute('href', function(loc) {
@@ -63,7 +70,13 @@ function stylestream(opts) {
 
 
 if (require.main === module) {
-  process.stdin
+  if(process.stdin.isTTY) {
+    stylestream({url: process.argv[2]})
+    .pipe(process.stdout);
+  }
+  else {
+    process.stdin
     .pipe(stylestream({basepath: process.argv[2]}))
     .pipe(process.stdout);
+  }
 }
