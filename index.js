@@ -64,7 +64,6 @@ function stylestream(opts) {
       styles.close();
     }
   }
-  
 }
 
 
