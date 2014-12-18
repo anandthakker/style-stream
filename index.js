@@ -29,8 +29,11 @@ function stylestream(opts) {
   }
 
   horn.selectAll('link', function(elem) {
-    elem.getAttribute('href', function(loc) {
-      pushStreamForLocation(loc);
+    elem.getAttributes(function(attributes) {
+      if('stylesheet' === ((attributes.rel || '').toLowerCase()) ||
+        ('undefined' === typeof attributes.rel) &&
+        attributes.href)
+      pushStreamForLocation(attributes.href);
     });
   });
 
