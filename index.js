@@ -56,7 +56,11 @@ function stylestream(opts) {
     }
     if (isHttp) {
       pending++;
-      var stream = request(loc).pipe(through());
+      var stream = request({
+        method: 'GET',
+        uri: loc,
+        gzip: true
+      }).pipe(through());
       stream.on('end', closeStyles);
       styles.push(stream);
     }
