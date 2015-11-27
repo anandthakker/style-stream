@@ -35,7 +35,11 @@ function stylestream(opts) {
       if('stylesheet' === ((attributes.rel || '').toLowerCase()) ||
         ('undefined' === typeof attributes.rel) &&
         attributes.href)
-      pushStreamForLocation(attributes.href);
+      try {
+        pushStreamForLocation(attributes.href);
+      } catch (e) {
+        styles.emit('error', e);
+      }
     });
   });
 
