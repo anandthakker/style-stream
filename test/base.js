@@ -31,3 +31,15 @@ test('error with no basepath', function(t) {
   })
   .resume()
 })
+
+test('silently skip link when basepath: false', function(t) {
+  fs.createReadStream(__dirname + '/link.html')
+  .pipe(stylestream({ basepath: false }))
+  .on('error', function (e) {
+    t.error(e)
+  })
+  .on('data', function (d) {
+    t.error(d)
+  })
+  .on('end', function () { t.end() })
+})

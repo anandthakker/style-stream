@@ -19,10 +19,9 @@ function stylestream(opts) {
     pending = 0;
 
   opts = opts || {
-    baseurl: null,
-    basepath: null
+    baseurl: null
   }
-  
+
   if(reHttp.test(opts.url)) {
     return request(opts.url).pipe(stylestream({
       baseurl: opts.url,
@@ -69,7 +68,7 @@ function stylestream(opts) {
       styles.push(stream);
     }
     else if (opts.basepath) styles.push(fs.createReadStream(path.resolve(opts.basepath, loc)));
-    else throw new Error('Cannot resolve href without a baseurl or basepath.')
+    else if (typeof opts.basepath === 'undefined') throw new Error('Cannot resolve href without a baseurl or basepath.')
   }
   
   function closeStyles() {
