@@ -21,3 +21,13 @@ test('<style> element', function(t) {
     t.end()
   }))
 })
+
+test('error with no basepath', function(t) {
+  fs.createReadStream(__dirname + '/link.html')
+  .pipe(stylestream({}))
+  .on('error', function (e) {
+    t.ok(e)
+    t.end()
+  })
+  .resume()
+})
