@@ -1,6 +1,6 @@
 {
   "name": "style-stream",
-  "version": "1.2.0",
+  "version": "1.3.0",
   "description": "Transform stream that reads HTML and writes all (inline and referenced) CSS used in it.",
   "main": "index.js",
   "bin": "index.js",
