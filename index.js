@@ -14,17 +14,17 @@ module.exports = stylestream
 var reHttp = /^http/
 
 function stylestream (opts) {
+  opts = opts || { baseurl: null }
+
   var horn = trumpet()
   var styles = next([])
   var pending = 0
 
-  opts = opts || { baseurl: null }
-
   if (reHttp.test(opts.url)) {
-    return request(opts.url).pipe(stylestream({
-      baseurl: opts.url,
-      basepath: null
-    }))
+    var source = opts.url
+    opts.baseurl = opts.url
+    delete opts.url
+    return request(source).pipe(stylestream(opts))
   }
 
   horn.selectAll('link', function (elem) {
@@ -32,7 +32,7 @@ function stylestream (opts) {
       if (((attributes.rel || '').toLowerCase() === 'stylesheet') ||
         (typeof attributes.rel === 'undefined') && attributes.href) {
         try {
-          pushStreamForLocation(attributes.href)
+          pushStreamForLocation(elem, attributes)
         } catch (e) {
           styles.emit('error', e)
         }
@@ -41,19 +41,34 @@ function stylestream (opts) {
   })
 
   horn.selectAll('style', function (elem) {
-    styles.push(elem.createReadStream())
+    elem.getAttributes(function (attributes) {
+      comment({ element: elem.name, attributes: attributes })
+      if (!opts.sourcesOnly) {
+        styles.push(elem.createReadStream())
+      }
+    })
   })
 
   horn.on('end', closeStyles)
 
   return duplexer(horn, styles)
 
-  function pushStreamForLocation (loc) {
+  function comment (c) {
+    if (!(opts.sourceComments || opts.sourcesOnly)) { return }
+    c = JSON.stringify(c)
+    if (opts.sourceComments) { c = '/* ' + c + ' */' }
+    styles.push('\n' + c + '\n')
+  }
+  function pushStreamForLocation (elem, attributes) {
+    var loc = attributes.href
     var isHttp = reHttp.test(loc)
     if (reHttp.test(opts.baseurl)) {
       isHttp = true
       loc = url.resolve(opts.baseurl, loc)
     }
+    comment({ element: elem.name, attributes: attributes, resolved: loc })
+    if (opts.sourcesOnly) { return }
+
     if (isHttp) {
       pending++
       var stream = request({
@@ -69,19 +84,22 @@ function stylestream (opts) {
   }
 
   function closeStyles () {
-    if (pending-- <= 0) {
+    if (pending-- <= 0 && !opts.sourcesOnly) {
       styles.close()
     }
   }
 }
 
 if (require.main === module) {
+  var argv = require('minimist')(process.argv.slice(2))
+  var out
   if (process.stdin.isTTY) {
-    stylestream({url: process.argv[2]})
-      .pipe(process.stdout)
+    argv.url = argv.url || argv._[0]
+    out = stylestream(argv)
   } else {
-    process.stdin
-      .pipe(stylestream({basepath: process.argv[2]}))
-      .pipe(process.stdout)
+    argv.basepath = argv.basepath || argv._[0]
+    out = process.stdin
+      .pipe(stylestream(argv))
   }
+  out.pipe(process.stdout)
 }

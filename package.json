@@ -5,7 +5,7 @@
   "main": "index.js",
   "bin": "index.js",
   "scripts": {
-    "test": "tape test/*.js"
+    "test": "standard && tape test/*.js"
   },
   "repository": {
     "type": "git",
@@ -26,10 +26,13 @@
   "homepage": "https://github.com/anandthakker/style-stream",
   "devDependencies": {
     "concat-stream": "^1.4.7",
+    "standard": "^5.4.1",
     "tape": "^3.0.3"
   },
   "dependencies": {
+    "JSONStream": "^1.0.7",
     "duplexer2": "0.0.2",
+    "minimist": "^1.2.0",
     "next-stream": "^2.0.0",
     "request": "^2.51.0",
     "through2": "^0.6.3",

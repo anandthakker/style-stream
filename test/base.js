@@ -1,7 +1,7 @@
-var fs = require('fs'),
-  test = require('tape'),
-  concat = require('concat-stream'),
-  stylestream = require('../')
+var fs = require('fs')
+var test = require('tape')
+var concat = require('concat-stream')
+var stylestream = require('../')
 
 test('resolving <link> element', function (t) {
   fs.createReadStream(__dirname + '/link.html')
